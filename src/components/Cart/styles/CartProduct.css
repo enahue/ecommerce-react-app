@@ -35,6 +35,11 @@
   font-weight: bold;
 }
 
+.product img{
+  width: 150px;
+  max-height:200px ;
+}
+
 .product_button-less,
 .product_plus {
   display: flex;
