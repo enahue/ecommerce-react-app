@@ -1,71 +1,87 @@
-import React, { useEffect, useState } from 'react'
-import ProductCard from '../components/ProductCard'
-import { axiosEcommerce } from '../utils/configAxios'
-import "./styles/Home.css"
+import React, { useEffect, useState } from "react";
+import ProductCard from "../components/ProductCard";
+import { axiosEcommerce } from "../utils/configAxios";
+import "./styles/Home.css";
 
 const Home = () => {
-    const [products, setProducts] = useState([])
-    const [categories, setCategories] = useState([])
-    const [nameFilter, setNameFilter] = useState("")
-    const [filterProducts, setFilterProducts] = useState([])
-    const [categoryFilter, setCategoryFilter] = useState(0)
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [nameFilter, setNameFilter] = useState("");
+  const [filterProducts, setFilterProducts] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState(0);
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        const nameProduct = e.target.nameProduct.value
-        setNameFilter(nameProduct)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const nameProduct = e.target.nameProduct.value;
+    setNameFilter(nameProduct);
+  };
+
+  useEffect(() => {
+    axiosEcommerce
+      .get("/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    axiosEcommerce
+      .get("/categories")
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    const newProductsByName = products.filter((product) =>
+      product.title.toLowerCase().includes(nameFilter.toLowerCase())
+    );
+    if (categoryFilter) {
+      const newProductsByCategory = newProductsByName.filter(
+        (product) => product.categoryId === categoryFilter
+      );
+      setFilterProducts(newProductsByCategory);
+    } else {
+      setFilterProducts(newProductsByName);
     }
+  }, [nameFilter, products, categoryFilter]);
 
-    useEffect(() => {
-        axiosEcommerce
-            .get("/products")
-            .then((res) => setProducts(res.data))
-            .catch((err) => console.log(err))
-    }, [])
-
-    useEffect(() => {
-        axiosEcommerce
-        .get("/categories")
-        .then((res) => setCategories(res.data))
-        .catch((err) => console.log(err))
-    }, [])
-
-    useEffect (() => {
-        const newProductsByName = products.filter((product) => 
-        product.title.toLowerCase().includes(nameFilter.toLowerCase())
-        )
-        if(categoryFilter){
-            const newProductsByCategory = newProductsByName.filter(product => product.categoryId === categoryFilter)
-            setFilterProducts(newProductsByCategory)
-        }else {
-            setFilterProducts(newProductsByName)
-        }
-    }, [nameFilter, products, categoryFilter])
-
-    return (
-    <main className='home'>
+  return (
+    <main className="home">
+      <div className="container-box">
         <form onSubmit={handleSubmit}>
-            <div>
-                <input id="nameProduct" type="text" />
-                <button> <i className='bx bx-search'></i></button>
-            </div>
+          <div className="container-search-box">
+            <input
+              id="nameProduct"
+              type="text"
+              placeholder="search products..."
+            />
+            <button>
+              {" "}
+              <i className="bx bx-search"></i>
+            </button>
+          </div>
         </form>
-        <div>
-            <h3>Categories</h3>
-            <ul>
-                <li onClick={() => setCategoryFilter(0)}>All</li>
-                {
-                    categories.map(category => <li onClick={() => setCategoryFilter(category.id)} key={category.id}>{category.name}</li>)
-                }
-            </ul>
+        <div className="container-product-category">
+          {/* <h3>Categories</h3> */}
+          <select className="container-product-options">
+            <option onClick={() => setCategoryFilter(0)}>All</option>
+            {categories.map((category) => (
+              <option
+                onClick={() => setCategoryFilter(category.id)}
+                key={category.id}
+              >
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
-        <section className='home_listProducts'>
-            {filterProducts.map((product) => (
-                <ProductCard key={product.id} product={product}/>
-                ))}
-        </section>
+      </div>
+      <section className="home_listProducts">
+        {filterProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </section>
     </main>
-    )
-}
+  );
+};
 
-export default Home
+export default Home;

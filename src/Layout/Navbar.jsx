@@ -10,7 +10,7 @@ const Navbar = () => {
 
     return (
     <nav className='navbar'>
-        <Link className='navbar_name' to="/"><h2>e-commerce</h2></Link>
+        <Link className='navbar_name' to="/"><h2>Mi Store</h2></Link>
         <div className='navbar_containerLinks'>
             <Link className='navbar_link' to="/login"><i className='bx bx-user'></i></Link>
             <Link className='navbar_link' to="/purchases"><i className='bx bx-box'></i></Link>
